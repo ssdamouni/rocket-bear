@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="h2">{{user.full_name}}</h1>
+    <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail">
+    {% if instruments %}
+        <h3 class="user-field">INSTRUMENT</h3>
+        <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}} {% endfor %}</h3>
+    {% endif %}
+    {% if roles %}
+        <h3 class="user-field">WORK</h3>
+        <h3 class="user-field-data">{% for role in roles %}{{role}} {% endfor %}</h3>
+    {% endif %}
+    {% if user.region_id %}
+        <h3 class="user-field">LOCATION</h3>
+        <h3 class="user-field-data">{{user.regions.city}}, {{user.regions.state}}</h3>
+    {% endif %}
+    <h3 class="user-field">CV</h3>
+    <h3 class="user-field">EXPERTISE</h3>
+</div>
+    <br>
+    <div class="btn-group ml-3">
+        <form action="/users/{{user.id}}/edit">
+            <input type="submit" value="Add/Update User Info" class="btn btn-primary"/>
+        </form>
+        <form action="/users/{{user.id}}/delete" method="POST">
+            <input type="submit" value="Delete User" class="btn btn-danger"/>
+        </form>    
+    </div>
+    <div class="container ml-3">
+        <h1 class="h2 mt-3">Events</h1>
+            <ul>
+                {% for event in events %}
+                    <h3>{{event.title}}</h3>
+                    <p class="blockquote container">{{ event.description }}<br> {{event.address}}<br> {{event.date}}</p>
+                {% endfor %}
+            </ul>
+            <form action="/users/{{user.id}}/posts/new">
+                <input type="submit" value="Create Post" class="btn btn-primary"/>
+            </form>
+    </div>
+
+    <form action="/">
+        <input type="submit" value="Go Home" class="btn btn-success mt-5 ml-3"/>
+    </form>
+{% endblock %}
