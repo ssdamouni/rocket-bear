@@ -117,7 +117,7 @@ class User(db.Model):
     first_name = db.Column(db.Text,nullable=False,)
     last_name = db.Column(db.Text, nullable=True,)
 
-    region_id = db.Column(db.Integer, db.ForeignKey('regions.id'), default=1)
+    region_id = db.Column(db.Integer, db.ForeignKey('regions.id'))
     regions = db.relationship('Region')
     
     def __repr__(self):
@@ -210,7 +210,7 @@ class EventPost(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     genre = db.Column(db.Text)
     region_id = db.Column(db.Integer, db.ForeignKey('regions.id'))
-        
+
     regions = db.relationship('Region')
     
 

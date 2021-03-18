@@ -129,27 +129,37 @@ def homepage():
 @app.route('/users/<int:user_id>')
 def user_profile(user_id):
     if g.user:
-        user = User.query.get(user_id)
+        user = User.query.get_or_404(user_id)
         #get list of user instruments
-        instruments= list(user.instruments)
         instruments_list = []
-        i = 0
-        while i < len(instruments):
-            instruments_list.append(instruments[i].instrument)
-            i += 1
+        if user.instruments:
+            instruments= list(user.instruments)           
+            i = 0
+            while i < len(instruments):
+                instruments_list.append(instruments[i].instrument)
+                i += 1
         
         #get list of roles
-        roles= list(user.roles)
         roles_list = []
-        j = 0
-        while j < len(roles):
-            roles_list.append(roles[j].role)
-            j += 1
+        if user.roles:
+            roles= list(user.roles)
+            j = 0
+            while j < len(roles):
+                roles_list.append(roles[j].role)
+                j += 1
 
         events = EventPost.query.filter_by(user_id=user_id)
         return render_template('users/profile.html', user=user, events=events, instruments=instruments_list, roles=roles_list)
     else:
         return render_template('home-anon.html')
+
+@app.route('/users/<int:user_id>/edit', methods=["POST"])
+def edit_user(user_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        form = UserInfoForm()
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
 def delete_user(user_id):

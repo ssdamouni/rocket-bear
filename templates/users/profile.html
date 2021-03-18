@@ -2,20 +2,22 @@
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="profile-summary">
     <h2 class="h2">{{user.full_name}}</h1>
-    <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail">
-    {% if instruments %}
+    <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail" id="profile-picture">
         <h3 class="user-field">INSTRUMENT</h3>
+    {% if instruments %}
         <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}} {% endfor %}</h3>
     {% endif %}
-    {% if roles %}
         <h3 class="user-field">WORK</h3>
+    {% if roles %}
         <h3 class="user-field-data">{% for role in roles %}{{role}} {% endfor %}</h3>
     {% endif %}
-    {% if user.region_id %}
         <h3 class="user-field">LOCATION</h3>
+    {% if user.region_id %}
         <h3 class="user-field-data">{{user.regions.city}}, {{user.regions.state}}</h3>
+    {% else %}
+    <h3><i class="fas fa-edit"></i></h3>
     {% endif %}
     <h3 class="user-field">CV</h3>
     <h3 class="user-field">EXPERTISE</h3>
