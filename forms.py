@@ -32,7 +32,7 @@ class JobForm(FlaskForm):
     title = StringField("What is the event called", validators=[InputRequired()])
     description = StringField("Description", validators=[InputRequired()])
     pay = FloatField("How does the gig pay(in dollars)", validators=[InputRequired()])
-    date = DateTimeLocalField("Date of Event", format='%d/%m/%Y %H:%M', validators=[InputRequired()]) 
+    date = DateTimeLocalField("Date of Event", format='%d/%m/%Y %h:%M', validators=[InputRequired()]) 
     region_id = SelectField("Where is this job?", coerce=int, validators=[InputRequired()])
     genre = StringField("What type of music will you play?", validators=[InputRequired()])
 
@@ -40,6 +40,3 @@ class AddRegion(FlaskForm):
     city = StringField("City", validators=[InputRequired()])
     county = StringField("County", validators=[InputRequired()])
     state = StringField("State", validators=[InputRequired()])
-# class FeedbackForm(FlaskForm):
-#     title = StringField("Title", validators=[InputRequired()])
-#     content = StringField("Content", validators=[InputRequired()])
