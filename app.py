@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import User, Instrument, Region, Genre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, connect_db, db
-from forms import UserAddForm, LoginForm
+from forms import UserAddForm, LoginForm, JobForm, EventForm, AddRegion
 
 CURR_USER_KEY = "curr_user"
 
@@ -171,5 +171,67 @@ def delete_user(user_id):
         db.session.delete(g.user)
         db.session.commit()
         return redirect('/signup')
+
+######################## Region Routes ##############################
+
+@app.route('/regions/add', methods=["GET", "POST"])
+def add_region():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        form = AddRegion()
+        if form.validate_on_submit():
+            region = Region(city=form.city.data, county=form.county.data, state=form.state.data)
+            db.session.add(region)
+            db.session.commit()
+            return redirect('/')
+        return render_template("region-form.html", form=form)
+
     
 ######################## Event Routes ##############################
+
+
+######################## Job Routes ##############################
+@app.route('/jobs')
+def list_jobs():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        jobs = JobPost.query.all()
+        return render_template("/jobs", jobs=jobs)
+
+
+@app.route('/users/<int:user_id>/newjob', methods=["GET", "POST"])
+def create_job(user_id):
+    """Used by users to create job posts"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        regions = Region.query.all()
+        # list of tuples for selectfield
+        region_list = [(i.id, i.city) for i in regions]
+        form = JobForm()
+        #passing selectfield choice into the form
+        form.region_id.choices = region_list
+        if form.validate_on_submit():
+            job = JobPost(title=form.title.data, 
+                          description=form.description.data, 
+                          pay=form.pay.data, 
+                          date=form.date.data, 
+                          region_id=form.region_id.data, 
+                          user_id=user_id, 
+                          genre=form.genre.data)
+
+            db.session.add(job)
+            db.session.commit()
+            return redirect(f"/users/{user_id}")
+        return render_template("/job-form.html", form=form)
+    else:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+if __name__ == '__main__':
+    app.run(debug=True)

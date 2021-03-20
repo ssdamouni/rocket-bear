@@ -13,6 +13,7 @@
 
   <link rel="stylesheet"
         href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
   <link rel="stylesheet" href="/static/app.css">
   <link rel="shortcut icon" href="/static/favicon.ico">
 </head>
@@ -31,8 +32,8 @@
               <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
             {% if not g.user %}
-                <li><a href="/signup">Sign up</a></li>
-                <li><a href="/login">Log in</a></li>
+                <li><a href="/signup" class="nav-link active">Sign up</a></li>
+                <li><a href="/login" class="nav-link active">Log in</a></li>
             {% else %}
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
@@ -45,12 +46,12 @@
           </form>
         </div>
       </nav>
-    {% block content %}
     <section>
-        {% for msg in get_flashed_messages() %}
-            <p>{{msg}}</p>
+        {% for category, msg in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{category}}">{{ msg }}</div>
         {% endfor %}
     </section>
+    {% block content %}
     {% endblock %}
 <script src="/static/app.js"></script>
 <script src="http://unpkg.com/jquery"></script>
