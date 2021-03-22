@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<h1>Here are the Events coming up!</h1>
+<ul class="list-group col-4 ml-3">
+    {% for event in events %}
+    <li class="list-group-item"><a  class="text-danger font-weight-bold" href="/events/{{ event.id }}">{{ event.title }}</a></li>
+    {% endfor %}
+</ul>
+<!-- <form action="/users/new" class="mt-4">
+    <input type="submit" value="Create User" class="btn btn-danger"/>
+</form> -->
+
+<form action="/">
+    <input type="submit" value="Homepage" class="btn btn-dark" />
+</form>
+{% endblock %}

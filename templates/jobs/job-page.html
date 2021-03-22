@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Jobs{% endblock %}
+
+{% block content %}
+<h1>Does this job sound right for you?</h1>
+<h2>Title: {{job.title}}</h2>
+<p> Description: {{job.description}}</p>
+<p>${{job.pay}}</p>
+<p>Date: {{job.date}}</p>
+<p>{{job.regions.city}}, {{job.regions.state}}</p>
+<p>Posted by: {{job.users.full_name}}</p>
+<p>Genre: {{job.genre}}</p>
+
+<form action="/jobs">
+    <input type="submit" value="Back to Jobs" class="btn btn-dark" />
+</form>
+{% endblock %}

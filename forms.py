@@ -25,6 +25,7 @@ class EventForm(FlaskForm):
     description = StringField("Description", validators=[InputRequired()])
     address = StringField("What is the Address of the event?", validators=[InputRequired()])
     date = DateTimeLocalField("Date of Event", validators=[InputRequired()])
+    region_id = SelectField("Where is this job?", coerce=int, validators=[InputRequired()])
     genre = StringField("What type of music will you play?", validators=[InputRequired()])
 
 
@@ -32,7 +33,7 @@ class JobForm(FlaskForm):
     title = StringField("What is the event called", validators=[InputRequired()])
     description = StringField("Description", validators=[InputRequired()])
     pay = FloatField("How does the gig pay(in dollars)", validators=[InputRequired()])
-    date = DateTimeLocalField("Date of Event", format='%d/%m/%Y %h:%M', validators=[InputRequired()]) 
+    date = DateTimeLocalField("Date of Event", validators=[InputRequired()]) 
     region_id = SelectField("Where is this job?", coerce=int, validators=[InputRequired()])
     genre = StringField("What type of music will you play?", validators=[InputRequired()])
 

@@ -24,7 +24,7 @@
 </div>
     <br>
     <div class="btn-group ml-3">
-        <form action="/users/{{user.id}}/newjob">
+        <form action="/users/{{user.id}}/jobs/new">
             <input type="submit" value="Create a new job post" class="btn btn-primary"/>
         </form>
         <form action="/users/{{user.id}}/delete" method="POST">
@@ -39,8 +39,8 @@
                     <p class="blockquote container">{{ event.description }}<br> {{event.address}}<br> {{event.date}}</p>
                 {% endfor %}
             </ul>
-            <form action="/users/{{user.id}}/posts/new">
-                <input type="submit" value="Create Post" class="btn btn-primary"/>
+            <form action="/users/{{user.id}}/events/new">
+                <input type="submit" value="Create New Event" class="btn btn-primary"/>
             </form>
     </div>
 

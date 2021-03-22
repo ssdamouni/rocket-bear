@@ -190,6 +190,53 @@ def add_region():
 
     
 ######################## Event Routes ##############################
+@app.route('/events')
+def list_events():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        events = EventPost.query.all()
+        return render_template("/events/event-list.html", events=events)
+
+@app.route('/events/<int:event_id>')
+def specific_event(event_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        event = EventPost.query.get_or_404(event_id)
+        return render_template("/events/event-page.html", event=event)
+
+@app.route('/users/<int:user_id>/events/new', methods=["GET", "POST"])
+def create_event(user_id):
+    """Used by users to create job posts"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        regions = Region.query.all()
+        # list of tuples for selectfield
+        region_list = [(i.id, i.city) for i in regions]
+        form = EventForm()
+        #passing selectfield choice into the form
+        form.region_id.choices = region_list
+        if form.validate_on_submit():
+            event = EventPost(title=form.title.data, 
+                          description=form.description.data, 
+                          addres=form.address.data, 
+                          date=form.date.data, 
+                          region_id=form.region_id.data, 
+                          user_id=user_id, 
+                          genre=form.genre.data)
+
+            db.session.add(event)
+            db.session.commit()
+            return redirect(f"/users/{user_id}")
+        return render_template("events/event-form.html", form=form)
+    else:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
 
 ######################## Job Routes ##############################
@@ -198,12 +245,21 @@ def list_jobs():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    if g.user and session[CURR_USER_KEY] == user_id:
+    if g.user:
         jobs = JobPost.query.all()
-        return render_template("/jobs", jobs=jobs)
+        return render_template("/jobs/job-list.html", jobs=jobs)
+
+@app.route('/jobs/<int:job_id>')
+def specific_job(job_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        job = JobPost.query.get_or_404(job_id)
+        return render_template("/jobs/job-page.html", job=job)
 
 
-@app.route('/users/<int:user_id>/newjob', methods=["GET", "POST"])
+@app.route('/users/<int:user_id>/jobs/new', methods=["GET", "POST"])
 def create_job(user_id):
     """Used by users to create job posts"""
     if not g.user:
@@ -233,5 +289,4 @@ def create_job(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+

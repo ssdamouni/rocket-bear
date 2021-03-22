@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<h1>Does this Event sound like fun?</h1>
+<h2>Title: {{event.title}}</h2>
+<p> Description: {{event.description}}</p>
+<p>Address: {{event.address}}</p>
+<p>Date: {{event.date}}</p>
+<p>{{event.regions.city}}, {{event.regions.state}}</p>
+<p>Posted by: {{event.users.full_name}}</p>
+<p>Genre: {{event.genre}}</p>
+
+<form action="/events">
+    <input type="submit" value="Back to Jobs" class="btn btn-dark" />
+</form>
+{% endblock %}

@@ -188,7 +188,7 @@ class JobPost(db.Model):
     genre = db.Column(db.Text)
 
     regions = db.relationship('Region')
-    
+    users = db.relationship('User')    
 
     @property
     def friendly_date(self):
@@ -212,7 +212,7 @@ class EventPost(db.Model):
     region_id = db.Column(db.Integer, db.ForeignKey('regions.id'))
 
     regions = db.relationship('Region')
-    
+    users = db.relationship('User')  
 
     @property
     def friendly_date(self):
