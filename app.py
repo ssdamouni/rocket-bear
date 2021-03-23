@@ -3,9 +3,10 @@ from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+import requests
 
-from models import User, Instrument, Region, Genre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, connect_db, db
-from forms import UserAddForm, LoginForm, JobForm, EventForm, AddRegion
+from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, UserPiece, connect_db, db
+from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion
 
 CURR_USER_KEY = "curr_user"
 
@@ -148,18 +149,56 @@ def user_profile(user_id):
                 roles_list.append(roles[j].role)
                 j += 1
 
+        #get list of user instruments
+        genres_list = []
+        if user.genres:
+            genres= list(user.genres)           
+            k = 0
+            while k < len(genres):
+                genres_list.append(genres[k].genre)
+                k += 1
         events = EventPost.query.filter_by(user_id=user_id)
-        return render_template('users/profile.html', user=user, events=events, instruments=instruments_list, roles=roles_list)
+        return render_template('users/profile.html', user=user, events=events, instruments=instruments_list, roles=roles_list, genres=genres_list)
     else:
         return render_template('home-anon.html')
 
-@app.route('/users/<int:user_id>/edit', methods=["POST"])
+@app.route('/users/<int:user_id>/edit', methods=["GET","POST"])
 def edit_user(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    if g.user and session[CURR_USER_KEY] != user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
     if g.user and session[CURR_USER_KEY] == user_id:
+        regions = Region.query.all()
+        genres = Genre.query.all()
+        instruments = Instrument.query.all()
+        # list of tuples for selectfield
+        region_list = [(i.id, i.city) for i in regions]
+        genre_list = [(j.id, j.genre) for j in genres]
+        instrument_list = [(k.id, k.instrument) for k in instruments]
         form = UserInfoForm()
+        #passing selectfield choice into the form
+        form.region_id.choices = region_list
+        form.genre_id.choices = genre_list
+        form.instrument_id.choices = instrument_list
+        if form.validate_on_submit():
+            user = User.query.get_or_404(user_id)
+            user.image_url = form.image_url.data
+            user.bio = form.bio.data
+            user.website = form.website.data
+            user.region_id = form.region_id.data
+            user_genre = UserGenre(user_id=user_id, genre_id=form.genre_id.data)
+            user_instrument = UserInstrument(user_id=user_id, instrument_id=form.instrument_id.data)
+
+            db.session.add(user)
+            db.session.add(user_genre)
+            db.session.add(user_instrument)
+            db.session.commit()
+
+            return redirect(f'/users/{user_id}')
+        return render_template('users/user-add-info.html', form=form)
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
 def delete_user(user_id):
@@ -290,3 +329,27 @@ def create_job(user_id):
         return redirect("/")
 
 
+
+######################## Piece Routes ##############################
+@app.route('/works/<int:piece_id>')
+def work_page(piece_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        piece_info = requests.get(f"https://api.openopus.org/work/detail/{piece_id}.json")
+        piece_info = piece_info.json()
+        return render_template('works/work-page.html', piece_info=piece_info)
+
+@app.route('/works/<int:piece_id>/add', methods=["POST"])
+def add_user_work(piece_id):
+    """Adds pieces to the user's repertoire"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        user_id = g.user.id
+        user_piece = UserPiece(user_id=user_id, piece_id=piece_id)
+        db.session.add(user_piece)
+        db.session.commit()
+        return redirect(f'/users/{user_id}')
