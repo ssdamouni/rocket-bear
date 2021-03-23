@@ -17,10 +17,14 @@
     {% if user.region_id %}
         <h3 class="user-field-data">{{user.regions.city}}, {{user.regions.state}}</h3>
     {% else %}
-    <h3><i class="fas fa-edit"></i></h3>
+    <h3><a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
     {% endif %}
     <h3 class="user-field">CV</h3>
     <h3 class="user-field">EXPERTISE</h3>
+    {% if genres %}
+        <h3 class="user-field-data">{% for genre in genres %}{{genre}} {% endfor %}</h3>
+    {% endif %}
+    
 </div>
     <br>
     <div class="btn-group ml-3">

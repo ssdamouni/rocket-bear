@@ -45,6 +45,19 @@ class Genre(db.Model):
 
     genre = db.Column(db.Text, nullable=False)
 
+    users = db.relationship('User', secondary="user_genres", backref="genres")
+
+class UserGenre(db.Model):
+    """Junction table for users and roles"""
+    __tablename__='user_genres'
+
+    user_id = db.Column(db.Integer,
+                       db.ForeignKey("users.id"),
+                       primary_key=True)
+    genre_id = db.Column(db.Integer,
+                          db.ForeignKey("genres.id"),
+                          primary_key=True)
+
 class Study(db.Model):
     """Used to find instruments and add if needed"""
 
@@ -219,6 +232,17 @@ class EventPost(db.Model):
         """Return nicely-formatted date."""
 
         return self.date.strftime("%A, %D %H:%M")
+
+class UserPiece(db.Model):
+    """Junction table for users their pieces from the API"""
+    __tablename__='user_pieces'
+
+    user_id = db.Column(db.Integer,
+                       db.ForeignKey("users.id"),
+                       primary_key=True)
+    piece_id = db.Column(db.Integer,
+                          primary_key=True)
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.

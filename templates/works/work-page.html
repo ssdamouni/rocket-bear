@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{piece_info["work"]["title"]}}</h2>
+<h3>for {{piece_info["work"]["genre"]}}</h3>
+<p>Composer: {{piece_info["composer"]["complete_name"]}}</p>
+<p>{{g.user.id}}</p>
+
+<form action="/works/{{piece_info['work']['id']}}/add" method="POST">
+    <input type="submit" value="Add to Repertoire!" class="btn btn-success"/>
+</form> 
+{% endblock %}

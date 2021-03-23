@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, FloatField, SelectField
+from wtforms import StringField, PasswordField, IntegerField, FloatField, SelectField, FileField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import InputRequired
-from wtforms.widgets import TextArea
+from wtforms.widgets import TextArea, CheckboxInput
 
 class UserAddForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
@@ -15,6 +15,9 @@ class UserInfoForm(FlaskForm):
     image_url = StringField("Image URL")
     bio = StringField("Type bio here!", widget=TextArea())
     website = StringField("Website URL")
+    region_id = SelectField("Where is this job?", coerce=int, validators=[InputRequired()])
+    instrument_id = SelectField("What is your primary instrument", coerce=int)
+    genre_id = SelectField("Whatkind of music do you play?", coerce=int)
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
