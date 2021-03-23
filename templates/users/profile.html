@@ -24,7 +24,9 @@
     {% if genres %}
         <h3 class="user-field-data">{% for genre in genres %}{{genre}} {% endfor %}</h3>
     {% endif %}
-    
+    <h3>Edit user info<a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
+    <h3>Add Instrument<a href="{{user.id}}/add-instrument"><i class="fas fa-edit"></i></a></i></h3>
+    <h3>Add Genre<a href="{{user.id}}/add-genre"><i class="fas fa-edit"></i></a></i></h3>
 </div>
     <br>
     <div class="btn-group ml-3">

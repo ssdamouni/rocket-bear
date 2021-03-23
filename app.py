@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 import requests
 
 from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, UserPiece, connect_db, db
-from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion
+from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -172,33 +172,84 @@ def edit_user(user_id):
         return redirect("/")
     if g.user and session[CURR_USER_KEY] == user_id:
         regions = Region.query.all()
-        genres = Genre.query.all()
-        instruments = Instrument.query.all()
+
         # list of tuples for selectfield
         region_list = [(i.id, i.city) for i in regions]
-        genre_list = [(j.id, j.genre) for j in genres]
-        instrument_list = [(k.id, k.instrument) for k in instruments]
         form = UserInfoForm()
         #passing selectfield choice into the form
         form.region_id.choices = region_list
-        form.genre_id.choices = genre_list
-        form.instrument_id.choices = instrument_list
+       
         if form.validate_on_submit():
             user = User.query.get_or_404(user_id)
             user.image_url = form.image_url.data
             user.bio = form.bio.data
             user.website = form.website.data
             user.region_id = form.region_id.data
-            user_genre = UserGenre(user_id=user_id, genre_id=form.genre_id.data)
-            user_instrument = UserInstrument(user_id=user_id, instrument_id=form.instrument_id.data)
 
             db.session.add(user)
-            db.session.add(user_genre)
-            db.session.add(user_instrument)
             db.session.commit()
 
             return redirect(f'/users/{user_id}')
         return render_template('users/user-add-info.html', form=form)
+
+@app.route('/users/<int:user_id>/add-instrument', methods=["GET","POST"])
+def edit_user_instruments(user_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] != user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        instruments = Instrument.query.all()
+        instrument_list = [(k.id, k.instrument) for k in instruments]
+        form = UserInstrumentForm()
+        form.instrument_id.choices = instrument_list
+        if form.validate_on_submit():
+            try:
+                selected_instruments= form.instrument_id.data
+                i = 0
+                while i < len(selected_instruments):
+                    user_instrument = UserInstrument(user_id=user_id, instrument_id=form.instrument_id.data[i])
+                    db.session.add(user_instrument)
+                    db.session.commit()
+                    i+=1
+                return redirect(f'/users/{user_id}')
+            
+            except IntegrityError:
+                flash("You have already added one or more of these instruments", 'danger')
+                return render_template('users/{user_id}/add-genre', form=form)
+        return render_template('users/instrument-add.html', form=form)
+
+@app.route('/users/<int:user_id>/add-genre', methods=["GET","POST"])
+def edit_user_genres(user_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] != user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        genres = Genre.query.all()
+        genre_list = [(j.id, j.genre) for j in genres]
+        form = UserGenreForm()
+        form.genre_id.choices = genre_list
+        if form.validate_on_submit():
+            try:
+                selected_genre = form.genre_id.data
+                i = 0
+                while i < len(selected_genre):
+                    user_genre = UserGenre(user_id=user_id, genre_id=form.genre_id.data[i])
+                    db.session.add(user_genre)
+                    db.session.commit()
+                return redirect(f'/users/{user_id}')
+            except IntegrityError:
+                flash("You have already added one or more of these genres", 'danger')
+                return render_template('users/genre-add.html', form=form)
+            
+        return render_template('users/genre-add.html', form=form)
+        
+
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
 def delete_user(user_id):
