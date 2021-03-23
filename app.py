@@ -314,7 +314,7 @@ def create_event(user_id):
         if form.validate_on_submit():
             event = EventPost(title=form.title.data, 
                           description=form.description.data, 
-                          addres=form.address.data, 
+                          address=form.address.data, 
                           date=form.date.data, 
                           region_id=form.region_id.data, 
                           user_id=user_id, 
