@@ -119,13 +119,23 @@ def homepage():
     if g.user:
         users = User.query.all()
         events = EventPost.query.all()
-        return render_template("home.html", users=users, events=events)
+        jobs = JobPost.query.all()
+        return render_template("home.html", users=users, events=events, jobs=jobs)
     else:
         return render_template('home-anon.html')
 
 
 
 ############################ User Routes #################################
+
+@app.route('/users')
+def list_users():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        users = User.query.all()
+        return render_template("/users/user-list.html", users=users)
 
 @app.route('/users/<int:user_id>')
 def user_profile(user_id):
@@ -305,12 +315,15 @@ def create_event(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     if g.user and session[CURR_USER_KEY] == user_id:
+        genres = Genre.query.all()
+        genre_list = [(j.id, j.genre) for j in genres]
         regions = Region.query.all()
         # list of tuples for selectfield
         region_list = [(i.id, i.city) for i in regions]
         form = EventForm()
         #passing selectfield choice into the form
         form.region_id.choices = region_list
+        form.genre_id.choices = genre_list
         if form.validate_on_submit():
             event = EventPost(title=form.title.data, 
                           description=form.description.data, 
@@ -318,7 +331,7 @@ def create_event(user_id):
                           date=form.date.data, 
                           region_id=form.region_id.data, 
                           user_id=user_id, 
-                          genre=form.genre.data)
+                          genre_id=form.genre_id.data)
 
             db.session.add(event)
             db.session.commit()
@@ -328,7 +341,28 @@ def create_event(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+@app.route('/events/<int:event_id>/cancel', methods=["POST"])
+def cancel_event(event_id):  
+    event = EventPost.query.get_or_404(event_id)
+    if not g.user or g.user.id != event.user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    else:
+        event.cancelled = True
+        db.session.add(event)
+        db.session.commit()
+        return redirect("/events")
 
+@app.route('/events/<int:event_id>/delete', methods=["POST"])
+def delete_event(event_id):  
+    event = EventPost.query.get_or_404(event_id)
+    if not g.user or g.user.id != event.user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    else:
+        db.session.delete(event)
+        db.session.commit()
+        return redirect("/events")
 ######################## Job Routes ##############################
 @app.route('/jobs')
 def list_jobs():
@@ -356,12 +390,15 @@ def create_job(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     if g.user and session[CURR_USER_KEY] == user_id:
+        genres = Genre.query.all()
         regions = Region.query.all()
         # list of tuples for selectfield
         region_list = [(i.id, i.city) for i in regions]
+        genre_list = [(j.id, j.genre) for j in genres]
         form = JobForm()
         #passing selectfield choice into the form
         form.region_id.choices = region_list
+        form.genre_id.choices = genre_list
         if form.validate_on_submit():
             job = JobPost(title=form.title.data, 
                           description=form.description.data, 
@@ -369,7 +406,7 @@ def create_job(user_id):
                           date=form.date.data, 
                           region_id=form.region_id.data, 
                           user_id=user_id, 
-                          genre=form.genre.data)
+                          genre_id=form.genre_id.data)
 
             db.session.add(job)
             db.session.commit()
@@ -379,7 +416,28 @@ def create_job(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+@app.route('/jobs/<int:job_id>/fill', methods=["POST"])
+def fill_job(job_id):  
+    job = JobPost.query.get_or_404(job_id)
+    if not g.user or g.user.id != job.user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    else:
+        job.available = False
+        db.session.add(job)
+        db.session.commit()
+        return redirect("/jobs")
 
+@app.route('/jobs/<int:job_id>/delete', methods=["POST"])
+def delete_job(job_id):  
+    job = JobPost.query.get_or_404(job_id)
+    if not g.user or g.user.id != job.user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    else:
+        db.session.delete(job)
+        db.session.commit()
+        return redirect("/jobs")
 
 ######################## Piece Routes ##############################
 @app.route('/works/<int:piece_id>')

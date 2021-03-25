@@ -2,6 +2,10 @@
 {% block title %}Events{% endblock %}
 
 {% block content %}
+{% if event.cancelled == True %}
+    <h2> This event has been cancelled!</h2>
+{% endif %}
+
 <h1>Does this Event sound like fun?</h1>
 <h2>Title: {{event.title}}</h2>
 <p> Description: {{event.description}}</p>
@@ -9,9 +13,16 @@
 <p>Date: {{event.date}}</p>
 <p>{{event.regions.city}}, {{event.regions.state}}</p>
 <p>Posted by: {{event.users.full_name}}</p>
-<p>Genre: {{event.genre}}</p>
-
+<p>Genre: {{event.genres.genre}}</p>
+{% if g.user.id == event.user_id %}
+<form action="/events/{{event.id}}/cancel" method="POST">
+    <input type="submit" value="Cancel Event" class="btn btn-dark" />
+</form>
+<form action="/events/{{event.id}}/delete" method="POST">
+    <input type="submit" value="Delete Event" class="btn btn-dark" />
+</form>
+{% endif %}
 <form action="/events">
-    <input type="submit" value="Back to Jobs" class="btn btn-dark" />
+    <input type="submit" value="Back to Events" class="btn btn-dark" />
 </form>
 {% endblock %}

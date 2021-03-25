@@ -5,7 +5,8 @@
 <div class="profile-summary">
     <h2 class="h2">{{user.full_name}}</h1>
     <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail" id="profile-picture">
-        <h3 class="user-field">INSTRUMENT</h3>
+    <h2>Email: {{user.email}}</h2>
+    <h3 class="user-field">INSTRUMENT</h3>
     {% if instruments %}
         <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}} {% endfor %}</h3>
     {% endif %}
@@ -27,6 +28,10 @@
     <h3>Edit user info<a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
     <h3>Add Instrument<a href="{{user.id}}/add-instrument"><i class="fas fa-edit"></i></a></i></h3>
     <h3>Add Genre<a href="{{user.id}}/add-genre"><i class="fas fa-edit"></i></a></i></h3>
+    <div>
+        <h3>Bio:</h3>
+        <p>{{user.bio}}</p>
+    </div>
 </div>
     <br>
     <div class="btn-group ml-3">

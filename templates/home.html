@@ -4,12 +4,19 @@
     {% for user in users %}
     <li class="list-group-item"><a  class="text-danger font-weight-bold" href="/users/{{ user.id }}">{{ user.full_name }}</a></li>
     {% endfor %}
+    <h2>Events</h2>
     {% for event in events%}
     <div class="bg-light mx-auto w-50 border border-dark mt-2 rounded">
         <h2><a href="/events/{{event.id}}" class="text-success">{{event.title}}</a></h2>
-        <p>{{event.description}}</p>
         <p class="blockquote container">{{ event.description }}<br> {{event.address}}<br> {{event.friendly_date}}</p>
         <!--<p>Created by <a href="users/{{event.user_id}}" class="text-danger"></a> at</p>-->
+        </div>
+    {% endfor %}
+    <h2>Jobs!</h2>
+    {% for job in jobs%}
+    <div class="bg-light mx-auto w-50 border border-dark mt-2 rounded">
+        <h2><a href="/jobs/{{job.id}}" class="text-success">{{job.title}}</a></h2>
+        <p class="blockquote container">{{ job.description }}<br> ${{job.pay}}<br> {{job.friendly_date}}</p>
         </div>
     {% endfor %}
 {% endblock %}

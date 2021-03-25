@@ -196,12 +196,14 @@ class JobPost(db.Model):
     description = db.Column(db.Text, nullable=False)
     pay = db.Column(db.Float)
     date = db.Column(db.DateTime, nullable=False)
+    available = db.Column(db.Boolean, default=True)
     region_id = db.Column(db.Integer, db.ForeignKey('regions.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    genre = db.Column(db.Text)
+    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
 
     regions = db.relationship('Region')
-    users = db.relationship('User')    
+    users = db.relationship('User')  
+    genres = db.relationship('Genre')   
 
     @property
     def friendly_date(self):
@@ -220,12 +222,14 @@ class EventPost(db.Model):
     description = db.Column(db.Text, nullable=False)
     address = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
+    cancelled = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    genre = db.Column(db.Text)
+    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
     region_id = db.Column(db.Integer, db.ForeignKey('regions.id'))
 
     regions = db.relationship('Region')
-    users = db.relationship('User')  
+    users = db.relationship('User') 
+    genres = db.relationship('Genre')    
 
     @property
     def friendly_date(self):

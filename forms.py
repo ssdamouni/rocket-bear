@@ -16,7 +16,10 @@ class UserInfoForm(FlaskForm):
     bio = StringField("Type bio here!", widget=TextArea())
     website = StringField("Website URL")
     region_id = SelectField("Where is this job?", coerce=int)
-    
+
+class UserFile(FlaskForm):
+    cv = FileField("Attach your CV or Resume")
+
 class UserInstrumentForm(FlaskForm):
     instrument_id = SelectMultipleField("What is your primary instrument", option_widget=CheckboxInput(), widget=ListWidget(prefix_label=True), coerce=int)
 
@@ -34,16 +37,16 @@ class EventForm(FlaskForm):
     address = StringField("What is the Address of the event?", validators=[InputRequired()])
     date = DateTimeLocalField("Date of Event", format='%Y-%m-%dT%H:%M', validators=[InputRequired()])
     region_id = SelectField("Where is this job?", coerce=int, validators=[InputRequired()])
-    genre = StringField("What type of music will you play?", validators=[InputRequired()])
+    genre_id = SelectField("What type of music will you play?", coerce=int, validators=[InputRequired()])
 
 
 class JobForm(FlaskForm):
     title = StringField("What is the event called", validators=[InputRequired()])
     description = StringField("Description", validators=[InputRequired()])
-    pay = FloatField("How does the gig pay(in dollars)", validators=[InputRequired()])
+    pay = FloatField("How much does the gig pay(in dollars)", validators=[InputRequired()])
     date = DateTimeLocalField("Date of Event", format='%Y-%m-%dT%H:%M', validators=[InputRequired()]) 
     region_id = SelectField("Where is this job?", coerce=int, validators=[InputRequired()])
-    genre = StringField("What type of music will you play?", validators=[InputRequired()])
+    genre_id = SelectField("What type of music will you play?", coerce=int, validators=[InputRequired()])
 
 class AddRegion(FlaskForm):
     city = StringField("City", validators=[InputRequired()])
