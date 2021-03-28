@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 import requests
 
 from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, UserPiece, connect_db, db
-from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm
+from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -136,6 +136,23 @@ def list_users():
     if g.user:
         users = User.query.all()
         return render_template("/users/user-list.html", users=users)
+
+@app.route('/users/search', methods=["GET", "POST"])
+def search_users():
+    form = UserSearchForm()
+    if form.validate_on_submit():
+        field = form.user_attributes.data
+        info = form.search_info.data
+        if field == "first_name":
+            users = User.query.filter(User.first_name.ilike(info)).all()
+            return render_template("users/search-results.html", users=users)
+        if field == "last_name":
+            users = User.query.filter(User.last_name.ilike(info)).all()
+            return render_template("users/search-results.html", users=users)
+        if field == "email":
+            users = User.query.filter(User.email.ilike(info)).all()
+            return render_template("users/search-results.html", users=users)
+    return render_template("users/user-search-list.html", form=form)
 
 @app.route('/users/<int:user_id>')
 def user_profile(user_id):
@@ -411,7 +428,7 @@ def create_job(user_id):
             db.session.add(job)
             db.session.commit()
             return redirect(f"/users/{user_id}")
-        return render_template("/job-form.html", form=form)
+        return render_template("jobs/job-form.html", form=form)
     else:
         flash("Access unauthorized.", "danger")
         return redirect("/")

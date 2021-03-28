@@ -24,8 +24,11 @@ class UserInstrumentForm(FlaskForm):
     instrument_id = SelectMultipleField("What is your primary instrument", option_widget=CheckboxInput(), widget=ListWidget(prefix_label=True), coerce=int)
 
 class UserGenreForm(FlaskForm):
-    genre_id = SelectMultipleField("Whatkind of music do you play?", option_widget=CheckboxInput(), widget=ListWidget(prefix_label=True), coerce=int)
+    genre_id = SelectMultipleField("What kind of music do you play?", option_widget=CheckboxInput(), widget=ListWidget(prefix_label=True), coerce=int)
 
+class UserSearchForm(FlaskForm):
+    user_attributes = SelectField("Search Field", validators=[InputRequired()], choices=[('first_name', 'First Name'), ('last_name', 'Last Name'), ('email', 'Email')])
+    search_info = StringField("What are you looking for?")
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
