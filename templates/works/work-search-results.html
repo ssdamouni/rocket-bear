@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Are any of these what you are looking for?</h2>
+{% for work in works["works"]%}
+<ul>Title: {{work["title"]}}
+    <li>Genre: {{work["genre"]}}</li>
+    <li>ID: <a href="/works/{{work['id']}}">{{work["id"]}}</a></li>
+</ul>
+{% endfor %}
+    
+    
+{% endblock %}

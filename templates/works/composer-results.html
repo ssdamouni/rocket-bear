@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <table>
+        <tr>
+            <th>Full Name</th>
+            <th>Era</th>
+            <th>ID</th>
+        </tr>
+        {% for name, era, id in info %}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{era}}</td>
+            <td><a href="/works/composers/{{id}}">{{id}}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    
+{% endblock %}

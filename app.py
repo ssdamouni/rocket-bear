@@ -6,12 +6,13 @@ from sqlalchemy.exc import IntegrityError
 import requests
 
 from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, UserPiece, connect_db, db
-from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm
+from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm, FindWorkForm, FindComposerForm
 
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
+app.jinja_env.filters['zip'] = zip
 app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql:///cascade_link'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -456,7 +457,7 @@ def delete_job(job_id):
         db.session.commit()
         return redirect("/jobs")
 
-######################## Piece Routes ##############################
+######################## Song Routes ##############################
 @app.route('/works/<int:piece_id>')
 def work_page(piece_id):
     if not g.user:
@@ -474,8 +475,62 @@ def add_user_work(piece_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     if g.user:
-        user_id = g.user.id
-        user_piece = UserPiece(user_id=user_id, piece_id=piece_id)
-        db.session.add(user_piece)
-        db.session.commit()
-        return redirect(f'/users/{user_id}')
+        try:
+            user_id = g.user.id
+            user_piece = UserPiece(user_id=user_id, piece_id=piece_id)
+            db.session.add(user_piece)
+            db.session.commit()
+            return redirect(f'/users/{user_id}')
+        except IntegrityError:
+                flash("You have already added this piece", 'danger')
+                return redirect(f'/users/{user_id}')
+        
+@app.route('/works/composers/search')
+def find_composer():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        return render_template('works/find-composer.html')
+
+@app.route('/works/composers/results')
+def composer_list():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        search_input = request.args["name"]
+        composer_list = requests.get(f"https://api.openopus.org/composer/list/search/{search_input}.json")
+        composers = composer_list.json()
+        composer_names = []
+        composer_ids = []
+        composer_eras = []
+        i = 0
+        while i <len(composers["composers"]):
+            composer_names.append(composers["composers"][i]["complete_name"])
+            composer_ids.append(composers["composers"][i]["id"])
+            composer_eras.append(composers["composers"][i]["epoch"])
+            i+= 1
+        return render_template('works/composer-results.html', info=zip(composer_names,composer_eras,composer_ids))
+
+@app.route('/works/composers/<int:composer_id>', methods=["GET", "POST"])
+def composer_page(composer_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        works_resp = requests.get(f"https://api.openopus.org/work/list/composer/{composer_id}/Popular.json")
+        works = works_resp.json()
+        return render_template('works/composer-page.html', works=works)
+
+@app.route('/works/composers/<int:composer_id>/results')
+def composer_work_search(composer_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        genre = request.args["genre"]
+        title = request.args["title"]
+        works_resp = requests.get(f"https://api.openopus.org/work/list/composer/{composer_id}/genre/{genre}/search/{title}.json")
+        works = works_resp.json()
+        return render_template("works/work-search-results.html", works=works)
