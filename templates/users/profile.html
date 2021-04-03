@@ -54,7 +54,12 @@
                 <input type="submit" value="Create New Event" class="btn btn-primary"/>
             </form>
     </div>
-
+    {% for id in id_list %}
+            <ul>Title: {{works["works"][id]["title"]}}
+                <li>Genre: {{works["genre"]}}</li>
+                <li>ID: <a href="/works/{{works['works'][id]['id']}}">{{works["works"][id]["id"]}}</a></li>
+            </ul>    
+    {% endfor %}  
     <form action="/">
         <input type="submit" value="Go Home" class="btn btn-success mt-5 ml-3"/>
     </form>

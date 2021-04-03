@@ -186,7 +186,17 @@ def user_profile(user_id):
                 genres_list.append(genres[k].genre)
                 k += 1
         events = EventPost.query.filter_by(user_id=user_id)
-        return render_template('users/profile.html', user=user, events=events, instruments=instruments_list, roles=roles_list, genres=genres_list)
+        #get a list of piece ids
+        pieces = UserPiece.query.filter_by(user_id=user_id)
+        id_list = []
+        id_list_str = []
+        for piece in pieces:
+            id_list.append(piece.piece_id)
+            id_list_str.append(f"w:{piece.piece_id}")
+        id_list = str(id_list)
+        pieces_resp = requests.get(f"https://api.openopus.org/work/list/ids/{id_list[1:-1]}.json")
+        user_pieces = pieces_resp.json()
+        return render_template('users/profile.html', user=user, events=events, id_list=id_list_str, works=user_pieces, instruments=instruments_list, roles=roles_list, genres=genres_list)
     else:
         return render_template('home-anon.html')
 
