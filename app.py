@@ -1,12 +1,14 @@
 import os
 from datetime import datetime
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, send_from_directory, current_app as app
+from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+from werkzeug.utils import secure_filename
 import requests
 
-from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, Study, JobPost, EventPost, UserPiece, connect_db, db
-from forms import UserAddForm, UserInfoForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm, FindWorkForm, FindComposerForm
+from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, UserCV, Study, JobPost, EventPost, UserPiece, connect_db, db
+from forms import UserAddForm, UserInfoForm, AddCVForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm, FindWorkForm, FindComposerForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -18,12 +20,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
+app.config['UPLOADED_CV_DEST'] = 'uploads/cv'
 #toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 db.create_all()
 
-
+cv = UploadSet('cv', ['pdf'])
+configure_uploads(app, cv)
 
 @app.before_request
 def add_user_to_g():
@@ -229,6 +233,34 @@ def edit_user(user_id):
 
             return redirect(f'/users/{user_id}')
         return render_template('users/user-add-info.html', form=form)
+
+@app.route('/users/<int:user_id>/add-cv', methods=["GET","POST"])
+def add_user_cv(user_id):
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] != user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user and session[CURR_USER_KEY] == user_id:
+        form = AddCVForm()
+        if form.validate_on_submit():
+            filename = cv.save(form.file.data)
+            cv_info = UserCV(user_id=user_id, filename=filename)
+            db.session.add(cv_info)
+            db.session.commit()
+
+            return redirect(f'/users/{user_id}')
+        return render_template('users/add-cv.html', form=form)
+
+@app.route('/users/<int:user_id>/view-cv')
+def view_user_cv(user_id):
+    file_info = UserCV.query.filter_by(user_id=user_id).first()
+    if file_info == None:
+        flash("User has not Uploaded CV yet!", "warning")
+        return redirect(f'/users/{user_id}')
+    return send_from_directory(app.config['UPLOADED_CV_DEST'], file_info.filename, as_attachment=True)
+    
 
 @app.route('/users/<int:user_id>/add-instrument', methods=["GET","POST"])
 def edit_user_instruments(user_id):

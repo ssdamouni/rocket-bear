@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, FloatField, SelectField, FileField, SelectMultipleField
+from wtforms import StringField, PasswordField, IntegerField, FloatField, SelectField, FileField, SelectMultipleField, FileField
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import InputRequired
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput
@@ -62,3 +62,6 @@ class FindComposerForm(FlaskForm):
 class FindWorkForm(FlaskForm):
     work_genre = SelectField("Genre", validators=[InputRequired()], choices=[('Chamber', 'Chamber'), ('Keyboard', 'Keyboard'), ('Orchestral', 'Orchestral'), ('Stage', 'Stage'), ('Vocal', 'Vocal')])
     title = StringField("Title", validators=[InputRequired()])
+
+class AddCVForm(FlaskForm):
+    file = FileField("CV/Resume")

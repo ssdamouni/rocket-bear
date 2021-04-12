@@ -2,65 +2,83 @@
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
-<div class="profile-summary">
-    <h2 class="h2">{{user.full_name}}</h1>
-    <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail" id="profile-picture">
-    <h2>Email: {{user.email}}</h2>
-    <h3 class="user-field">INSTRUMENT</h3>
-    {% if instruments %}
-        <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}} {% endfor %}</h3>
-    {% endif %}
-        <h3 class="user-field">WORK</h3>
-    {% if roles %}
-        <h3 class="user-field-data">{% for role in roles %}{{role}} {% endfor %}</h3>
-    {% endif %}
-        <h3 class="user-field">LOCATION</h3>
-    {% if user.region_id %}
-        <h3 class="user-field-data">{{user.regions.city}}, {{user.regions.state}}</h3>
-    {% else %}
-    <h3><a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
-    {% endif %}
-    <h3 class="user-field">CV</h3>
-    <h3 class="user-field">EXPERTISE</h3>
-    {% if genres %}
-        <h3 class="user-field-data">{% for genre in genres %}{{genre}} {% endfor %}</h3>
-    {% endif %}
-    <h3>Edit user info<a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
-    <h3>Add Instrument<a href="{{user.id}}/add-instrument"><i class="fas fa-edit"></i></a></i></h3>
-    <h3>Add Genre<a href="{{user.id}}/add-genre"><i class="fas fa-edit"></i></a></i></h3>
-    <div>
-        <h3>Bio:</h3>
-        <p>{{user.bio}}</p>
+<div class="profile">
+    <div class="profile-summary container col-4 float-left rounded mt-4">
+        <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail" id="profile-picture">
+        <h2 class="h2">{{user.full_name}}</h1>
+        <h2>Email: {{user.email}}</h2>
+        <h3 class="user-field">INSTRUMENT</h3>
+        {% if instruments %}
+            <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}}, {% endfor %}</h3>
+        {% endif %}
+            <h3 class="user-field">WORK</h3>
+        {% if roles %}
+            <h3 class="user-field-data">{% for role in roles %}{{role}}, {% endfor %}</h3>
+        {% endif %}
+            <h3 class="user-field">LOCATION</h3>
+        {% if user.region_id %}
+            <h3 class="user-field-data">{{user.regions.city}}, {{user.regions.state}}</h3>
+        {% else %}
+        <h3><a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
+        {% endif %}
+        <h3 class="user-field">EXPERTISE</h3>
+        {% if genres %}
+            <h3 class="user-field-data">{% for genre in genres %}{{genre}} {% endfor %}</h3>
+        {% endif %}
+        <h3 class="user-field"><a method="POST" href="/users/{{user.id}}/view-cv">View CV</a></h3>
+        {% if g.user.id == user.id %}
+        <h3 class="user-field">Edit user info<a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
+        <h3 class="user-field">Add Instrument<a href="{{user.id}}/add-instrument"><i class="fas fa-edit"></i></a></i></h3>
+        <h3 class="user-field">Add Genre<a href="{{user.id}}/add-genre"><i class="fas fa-edit"></i></a></i></h3>
+        {% endif %}
+    </div>
+    <div class=" container float-right col-8 mt-4">
+            <div class="row">
+                <div class="profile-summary col rounded">
+                    <h1 class="h2 mt-3">Events
+                    {% if g.user.id == user.id %}
+                    <a href="/users/{{user.id}}/events/new"><i class="fas fa-plus"></i></a>
+                    {% endif %}
+                    </h1>
+                    {% for event in events %}
+                    <div class="card-body float-left">
+                        <h3 class="card-title" id="event-header">{{event.title}}</h3>
+                        <p class="card-text" id="event-body">{{event.address}}<br> {{event.regions.city}}, {{event.regions.state}} <br>{{event.date}}</p>
+                        <form action="/events/{{event.id}}">
+                            <button  class="btn" id="submit-button">More Info</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="profile-summary col rounded">
+                    <h3 class="mt-3">About {{user.first_name}}</h3>
+                    <p>{{user.bio}}</p>
+                </div>
+            </div>
+            {% if g.user.id == user.id %} 
+            <div class="btn-group ml-3">
+                <form action="/users/{{user.id}}/jobs/new">
+                    <input type="submit" value="Create a new job post" class="btn" id="submit-button"/>
+                </form> 
+            </div>
+            {% endif %}
+            {% for id in id_list %}
+                    <ul>Title: {{works["works"][id]["title"]}}
+                        <li>Genre: {{works["genre"]}}</li>
+                        <li>ID: <a href="/works/{{works['works'][id]['id']}}">{{works["works"][id]["id"]}}</a></li>
+                    </ul>    
+            {% endfor %}  
+            <form action="/">
+                <input type="submit" value="Go Home"/>
+            </form>
+    {% if g.user.id == user.id %}       
+    <form action="/users/{{user.id}}/delete" method="POST">
+        <input type="submit" value="Delete User" class="btn btn-danger"/>
+    </form>
+    {% endif %}   
     </div>
 </div>
-    <br>
-    <div class="btn-group ml-3">
-        <form action="/users/{{user.id}}/jobs/new">
-            <input type="submit" value="Create a new job post" class="btn btn-primary"/>
-        </form>
-        <form action="/users/{{user.id}}/delete" method="POST">
-            <input type="submit" value="Delete User" class="btn btn-danger"/>
-        </form>    
-    </div>
-    <div class="container ml-3">
-        <h1 class="h2 mt-3">Events</h1>
-            <ul>
-                {% for event in events %}
-                    <h3>{{event.title}}</h3>
-                    <p class="blockquote container">{{ event.description }}<br> {{event.address}}<br> {{event.date}}</p>
-                {% endfor %}
-            </ul>
-            <form action="/users/{{user.id}}/events/new">
-                <input type="submit" value="Create New Event" class="btn btn-primary"/>
-            </form>
-    </div>
-    {% for id in id_list %}
-            <ul>Title: {{works["works"][id]["title"]}}
-                <li>Genre: {{works["genre"]}}</li>
-                <li>ID: <a href="/works/{{works['works'][id]['id']}}">{{works["works"][id]["id"]}}</a></li>
-            </ul>    
-    {% endfor %}  
-    <form action="/">
-        <input type="submit" value="Go Home" class="btn btn-success mt-5 ml-3"/>
-    </form>
 {% endblock %}

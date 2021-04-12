@@ -246,7 +246,14 @@ class UserPiece(db.Model):
                        primary_key=True)
     piece_id = db.Column(db.Integer,
                           primary_key=True)
+class UserCV(db.Model):
+    __tablename__="user_cvs"
 
+    user_id = db.Column(db.Integer,
+                       db.ForeignKey("users.id"),
+                       primary_key=True)
+    filename = db.Column(db.Text,
+                          primary_key=True)
 
 def connect_db(app):
     """Connect this database to provided Flask app.

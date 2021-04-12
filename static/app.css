@@ -1,15 +1,49 @@
+body{
+    background-image: linear-gradient(to right, #6d81f2, #59ccd9); 
+    font-family: 'Overpass', sans-serif;
+    color: #4e546b;
+}
+button{
+    color: #fff;
+    background-color:  #6d81f2;
+}
+.profile-summary{
+    background-color: white;
+    width:25%
+}
+
 .user-field{
     font-size: 1rem;
+    color: #4e546b;
 }
 
 .user-field-data{
     font-size: 1rem;
+    color: #49a3f2;
 }
-
+.profile{
+    background-image: linear-gradient(to right, #6d81f2, #59ccd9);
+    border-left: #fff 5rem solid;
+    border-right: #fff 5rem solid;
+}
 #profile-picture{
     width: 50%;
 }
 
-.profile-summary{
-    width:25%
+
+#submit-button{
+    color: #fff;
+    background-color:  #6d81f2;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 25px;
+    margin: 3%;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+#event-header{
+    color:  #49a3f2;
+    font-weight: bolder;
+}
+#event-body{
+    color:  #49a3f2;
 }
