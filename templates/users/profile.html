@@ -49,7 +49,24 @@
                         </form>
                     </div>
                     {% endfor %}
-                    
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="profile-summary col rounded">
+                    <h1 class="h2 mt-3">Jobs
+                        {% if g.user.id == user.id %}
+                        <a href="/users/{{user.id}}/jobs/new"><i class="fas fa-plus"></i></a>
+                        {% endif %}
+                        </h1>
+                {% for job in jobs %}
+                    <div class="card-body float-left">
+                            <h3 class="card-title" id="event-header">{{job.title}}</h3>
+                            <p class="card-text" id="event-body">{{job.pay}}<br> {{job.regions.city}}, {{job.regions.state}} <br>{{job.date}}</p>
+                            <form action="/jobs/{{job.id}}">
+                            <button  class="btn" id="submit-button">More Info</button>
+                        </form>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row mt-3">
