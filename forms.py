@@ -56,6 +56,9 @@ class AddRegion(FlaskForm):
     county = StringField("County", validators=[InputRequired()])
     state = StringField("State", validators=[InputRequired()])
 
+class AddGenre(FlaskForm):
+    genre = StringField("Genre", validators=[InputRequired()])    
+    
 class FindComposerForm(FlaskForm):
     composer = StringField("Composer Name", validators=[InputRequired()])
 

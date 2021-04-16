@@ -43,7 +43,7 @@ class Genre(db.Model):
         primary_key=True, unique=True,
     )
 
-    genre = db.Column(db.Text, nullable=False)
+    genre = db.Column(db.Text, nullable=False, unique=True)
 
     users = db.relationship('User', secondary="user_genres", backref="genres")
 

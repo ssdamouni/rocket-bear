@@ -3,8 +3,8 @@
 {% block content %}
 
   <div class="row justify-content-md-center">
-  <div class="col-md-7 col-lg-5">
-    <h2 class="join-message">What kind of music do you play?</h2>
+  <div class="col-md-7 col-lg-5 rounded m-3 profile-summary">
+    <h2 class="join-message m-3">What kind of music do you play?</h2>
     <form method="POST" id="user_form">
       {{ form.hidden_tag() }}
 
@@ -12,12 +12,15 @@
         {% for error in field.errors %}
           <span class="text-danger">{{ error }}</span>
         {% endfor %}
-        {{ field(placeholder=field.label.text, class="form-control") }}
+        {{ field(placeholder=field.label.text, class="instrument-list") }}
       {% endfor %}
-
-      <button class="btn btn-primary btn-lg btn-block">Add instruments!</button>
+      <button class="btn btn-primary btn-lg m-3">Add instruments!</button>
     </form>
   </div>
 </div>
+
+  <form action="/genres/add">
+    <label> Don't see your preferred genre?</label>
+  <input type="submit" value="Add Genre" class="btn btn-success mt-5 ml-3"/>
 
 {% endblock %}

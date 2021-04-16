@@ -3,19 +3,19 @@
 {% block content %}
 
   <div class="row justify-content-md-center">
-  <div class="col-md-7 col-lg-5">
-    <h2 class="join-message">What instruemnts do you play?</h2>
-    <form method="POST" id="user_form">
-      {{ form.hidden_tag() }}
+  <div class="col-md-7 col-lg-5 profile-summary rounded m-3">
+    <h2 class="join-message m-3">What instruments do you play?</h2>
+    <form method="POST" id="user_form"> 
+        {{ form.hidden_tag() }}
 
-      {% for field in form if field.widget.input_type != 'hidden' %}
-        {% for error in field.errors %}
-          <span class="text-danger">{{ error }}</span>
-        {% endfor %}
-        {{ field(placeholder=field.label.text, class="form-control") }}
-      {% endfor %}
-
-      <button class="btn btn-primary btn-lg btn-block">Add instruments!</button>
+        {% for field in form if field.widget.input_type != 'hidden' %}
+          {% for error in field.errors %}
+            <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+          {{ field(placeholder=field.label.text, class="instrument-list") }}
+        {% endfor %}  
+        
+      <button class="btn btn-primary btn-lg m-3">Add instruments!</button>
     </form>
   </div>
 </div>

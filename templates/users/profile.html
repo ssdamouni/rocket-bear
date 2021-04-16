@@ -6,7 +6,7 @@
     <div class="profile-summary container col-4 float-left rounded mt-4">
         <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail" id="profile-picture">
         <h2 class="h2">{{user.full_name}}</h1>
-        <h2>Email: {{user.email}}</h2>
+        <h2 class="user-field">Email: {{user.email}}</h2>
         <h3 class="user-field">INSTRUMENT</h3>
         {% if instruments %}
             <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}}, {% endfor %}</h3>
@@ -75,22 +75,12 @@
                     <p>{{user.bio}}</p>
                 </div>
             </div>
-            {% if g.user.id == user.id %} 
-            <div class="btn-group ml-3">
-                <form action="/users/{{user.id}}/jobs/new">
-                    <input type="submit" value="Create a new job post" class="btn" id="submit-button"/>
-                </form> 
-            </div>
-            {% endif %}
             {% for id in id_list %}
                     <ul>Title: {{works["works"][id]["title"]}}
                         <li>Genre: {{works["genre"]}}</li>
                         <li>ID: <a href="/works/{{works['works'][id]['id']}}">{{works["works"][id]["id"]}}</a></li>
                     </ul>    
-            {% endfor %}  
-            <form action="/">
-                <input type="submit" value="Go Home"/>
-            </form>
+            {% endfor %}
     {% if g.user.id == user.id %}       
     <form action="/users/{{user.id}}/delete" method="POST">
         <input type="submit" value="Delete User" class="btn btn-danger"/>

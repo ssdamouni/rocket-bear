@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import requests
 
 from models import User, Instrument, Region, Genre, UserGenre, Role, UserRole, UserInstrument, UserCV, Study, JobPost, EventPost, UserPiece, connect_db, db
-from forms import UserAddForm, UserInfoForm, AddCVForm, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm, FindWorkForm, FindComposerForm
+from forms import UserAddForm, UserInfoForm, AddCVForm, AddGenre, LoginForm, JobForm, EventForm, AddRegion, UserInstrumentForm, UserGenreForm, UserSearchForm, FindWorkForm, FindComposerForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -224,10 +224,14 @@ def edit_user(user_id):
        
         if form.validate_on_submit():
             user = User.query.get_or_404(user_id)
-            user.image_url = form.image_url.data
-            user.bio = form.bio.data
-            user.website = form.website.data
-            user.region_id = form.region_id.data
+            if form.image_url.data:
+                user.image_url = form.image_url.data
+            if form.bio.data:
+                user.bio = form.bio.data
+            if form.website.data:
+                user.website = form.website.data
+            if form.region_id.data:
+                user.region_id = form.region_id.data
 
             db.session.add(user)
             db.session.commit()
@@ -285,7 +289,7 @@ def edit_user_instruments(user_id):
                     db.session.add(user_instrument)
                     db.session.commit()
                     i+=1
-                return redirect(f'/users/{user_id}')
+                return redirect(f'/users/{user_id}/edit')
             
             except IntegrityError:
                 flash("You have already added one or more of these instruments", 'danger')
@@ -313,7 +317,7 @@ def edit_user_genres(user_id):
                     user_genre = UserGenre(user_id=user_id, genre_id=form.genre_id.data[i])
                     db.session.add(user_genre)
                     db.session.commit()
-                return redirect(f'/users/{user_id}')
+                return redirect(f'/users/{user_id}/edit')
             except IntegrityError:
                 flash("You have already added one or more of these genres", 'danger')
                 return render_template('users/genre-add.html', form=form)
@@ -346,10 +350,25 @@ def add_region():
             region = Region(city=form.city.data, county=form.county.data, state=form.state.data)
             db.session.add(region)
             db.session.commit()
-            return redirect('/')
+            return redirect(f'/users/{g.user.id}/edit')
         return render_template("region-form.html", form=form)
 
-    
+#################################### Genre Adding ################################
+
+@app.route('/genres/add', methods=["GET", "POST"])
+def add_genre():
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    if g.user:
+        form = AddGenre()
+        if form.validate_on_submit():
+            genre = Genre(genre=form.genre.data)
+            db.session.add(genre)
+            db.session.commit()
+            return redirect(f'/users/{g.user.id}/add-genre')
+        return render_template("genre-form.html", form=form)
+
 ######################## Event Routes ##############################
 @app.route('/events')
 def list_events():

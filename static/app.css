@@ -9,7 +9,12 @@ button{
 }
 .profile-summary{
     background-color: white;
-    width:25%
+    width:25%;
+}
+
+.post-container{
+    background-color: white;
+    text-align: center;
 }
 
 .user-field{
@@ -30,7 +35,9 @@ button{
     width: 50%;
 }
 
-
+.instrument-list{
+    list-style: url('/static/images/music-solid.svg');
+}
 #submit-button{
     color: #fff;
     background-color:  #6d81f2;
