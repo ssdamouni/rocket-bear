@@ -31,8 +31,6 @@ db.create_all()
 cv = UploadSet('cv', ['pdf'])
 configure_uploads(app, cv)
 
-if __name__ == '__main__':
-    socketio.run(app)
 
 @app.before_request
 def add_user_to_g():
@@ -369,9 +367,13 @@ def add_genre():
         form = AddGenre()
         if form.validate_on_submit():
             genre = Genre(genre=form.genre.data)
-            db.session.add(genre)
-            db.session.commit()
-            return redirect(f'/users/{g.user.id}/add-genre')
+            try:
+                db.session.add(genre)
+                db.session.commit()
+                return redirect(f'/users/{g.user.id}/add-genre')
+            except IntegrityError:
+                flash("This genre already exists", 'danger')
+                return render_template('genre-form.html', form=form)
         return render_template("genre-form.html", form=form)
 
 ######################## Event Routes ##############################
@@ -603,6 +605,11 @@ def composer_work_search(composer_id):
         return render_template("works/work-search-results.html", works=works)
 
 ##################### MESSAGING ###################################
+
+@app.route('/chat', methods=['GET', 'POST'])
+def show_chat():
+    return render_template('/chat/chat-room.html')
+
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
 
@@ -610,3 +617,6 @@ def messageReceived(methods=['GET', 'POST']):
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
     socketio.emit('my response', json, callback=messageReceived)
+
+if __name__ == '__app__':
+    socketio.run(app)
