@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, session, g, send_from_directory, current_app as app
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_socketio import SocketIO
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 import requests
@@ -23,11 +24,15 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 app.config['UPLOADED_CV_DEST'] = 'uploads/cv'
 #toolbar = DebugToolbarExtension(app)
 
+socketio = SocketIO(app)
 connect_db(app)
 db.create_all()
 
 cv = UploadSet('cv', ['pdf'])
 configure_uploads(app, cv)
+
+if __name__ == '__main__':
+    socketio.run(app)
 
 @app.before_request
 def add_user_to_g():
@@ -78,7 +83,7 @@ def signup():
             db.session.commit()
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            flash("Username and/or email already taken!", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -596,3 +601,12 @@ def composer_work_search(composer_id):
         works_resp = requests.get(f"https://api.openopus.org/work/list/composer/{composer_id}/genre/{genre}/search/{title}.json")
         works = works_resp.json()
         return render_template("works/work-search-results.html", works=works)
+
+##################### MESSAGING ###################################
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)

@@ -1,22 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% for user in users %}
-    <li class="list-group-item"><a  class="text-danger font-weight-bold" href="/users/{{ user.id }}">{{ user.full_name }}</a></li>
-    {% endfor %}
-    <h2>Events</h2>
-    {% for event in events%}
-    <div class="bg-light mx-auto w-50 border border-dark mt-2 rounded">
-        <h2><a href="/events/{{event.id}}" class="text-success">{{event.title}}</a></h2>
-        <p class="blockquote container">{{ event.description }}<br> {{event.address}}<br> {{event.friendly_date}}</p>
-        <!--<p>Created by <a href="users/{{event.user_id}}" class="text-danger"></a> at</p>-->
+<h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
+    <div class="message_holder"></div>
+<form action="" method="POST">
+    <input type="text" class="username" placeholder="User Name"/>
+    <input type="text" class="message" placeholder="Messages"/>
+    <input type="submit"/>
+</form>
+<div class="profile">
+    <div class="profile-summary container col-4 float-left rounded mt-4">
+        <h3 class="h2 mt-3">Active Musicians</h3>
+        {% for user in users %}
+            <li class="list-group-item"><a  class="font-weight-bold" href="/users/{{ user.id }}">{{ user.full_name }}</a></li>
+        {% endfor %}
+    </div>
+    <div class=" container float-right col-8 mt-4">
+        <div class="row">
+            <div class="profile-summary col rounded">
+                <h1 class="h2 mt-3">Events</h1>
+                {% for event in events %}
+                <div class="card-body float-left">
+                    <h3 class="card-title" id="event-header">{{event.title}}</h3>
+                    <p class="card-text" id="event-body">{{event.address}}<br> {{event.regions.city}}, {{event.regions.state}} <br>{{event.date}}</p>
+                    <form action="/events/{{event.id}}">
+                        <button  class="btn" id="submit-button">More Info</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-    {% endfor %}
-    <h2>Jobs!</h2>
-    {% for job in jobs%}
-    <div class="bg-light mx-auto w-50 border border-dark mt-2 rounded">
-        <h2><a href="/jobs/{{job.id}}" class="text-success">{{job.title}}</a></h2>
-        <p class="blockquote container">{{ job.description }}<br> ${{job.pay}}<br> {{job.friendly_date}}</p>
+        <div class="row mt-3">
+            <div class="profile-summary col rounded">
+                <h1 class="h2 mt-3">Jobs</h1>
+            {% for job in jobs %}
+                <div class="card-body float-left">
+                        <h3 class="card-title" id="event-header">{{job.title}}</h3>
+                        <p class="card-text" id="event-body">{{job.pay}}<br> {{job.regions.city}}, {{job.regions.state}} <br>{{job.date}}</p>
+                        <form action="/jobs/{{job.id}}">
+                        <button  class="btn" id="submit-button">More Info</button>
+                    </form>
+                </div>
+            {% endfor %}
+            </div>
         </div>
-    {% endfor %}
+</div>
+    
+
 {% endblock %}
