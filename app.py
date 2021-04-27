@@ -5,6 +5,7 @@ from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_socketio import SocketIO
 from sqlalchemy.exc import IntegrityError
+from jinja2.exceptions import UndefinedError
 from werkzeug.utils import secure_filename
 import requests
 
@@ -194,17 +195,7 @@ def user_profile(user_id):
                 k += 1
         events = EventPost.query.filter_by(user_id=user_id)
         jobs = JobPost.query.filter_by(user_id=user_id)
-        #get a list of piece ids
-        pieces = UserPiece.query.filter_by(user_id=user_id)
-        id_list = []
-        id_list_str = []
-        for piece in pieces:
-            id_list.append(piece.piece_id)
-            id_list_str.append(f"w:{piece.piece_id}")
-        id_list = str(id_list)
-        pieces_resp = requests.get(f"https://api.openopus.org/work/list/ids/{id_list[1:-1]}.json")
-        user_pieces = pieces_resp.json()
-        return render_template('users/profile.html', user=user, events=events, jobs=jobs, id_list=id_list_str, works=user_pieces, instruments=instruments_list, roles=roles_list, genres=genres_list)
+        return render_template('users/profile.html', user=user, events=events, jobs=jobs, instruments=instruments_list, roles=roles_list, genres=genres_list)
     else:
         return render_template('home-anon.html')
 
@@ -327,7 +318,19 @@ def edit_user_genres(user_id):
             
         return render_template('users/genre-add.html', form=form)
         
-
+@app.route('/users/<int:user_id>/view-rep')
+def list_user_works(user_id):
+    #get a list of piece ids
+    pieces = UserPiece.query.filter_by(user_id=user_id)
+    id_list = []
+    id_list_str = []
+    for piece in pieces:
+        id_list.append(piece.piece_id)
+        id_list_str.append(f"w:{piece.piece_id}")
+    id_list = str(id_list)
+    pieces_resp = requests.get(f"https://api.openopus.org/work/list/ids/{id_list[1:-1]}.json")
+    user_pieces = pieces_resp.json()
+    return render_template('users/user-works.html', works=user_pieces, id_list=id_list_str,)
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
 def delete_user(user_id):
@@ -588,10 +591,14 @@ def composer_page(composer_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     if g.user:
-        works_resp = requests.get(f"https://api.openopus.org/work/list/composer/{composer_id}/Popular.json")
-        works = works_resp.json()
-        return render_template('works/composer-page.html', works=works)
-
+        try:
+            works_resp = requests.get(f"https://api.openopus.org/work/list/composer/{composer_id}/genre/Popular.json")
+            works = works_resp.json()
+            return render_template('works/composer-page.html', works=works)
+        except UndefinedError:
+            works_resp = requests.get(f"https://api.openopus.org/work/list/composer/{composer_id}/genre/all.json")
+            works = works_resp.json()
+            return render_template('works/composer-page.html', works=works)
 @app.route('/works/composers/<int:composer_id>/results')
 def composer_work_search(composer_id):
     if not g.user:

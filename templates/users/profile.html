@@ -9,7 +9,7 @@
         <h2 class="user-field">Email: {{user.email}}</h2>
         <h3 class="user-field">INSTRUMENT</h3>
         {% if instruments %}
-            <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}}, {% endfor %}</h3>
+            <h3 class="user-field-data">{% for instrument in instruments %}{{instrument}}{% if not loop.last %}, {% endif %}{% endfor %}</h3>
         {% endif %}
             <h3 class="user-field">WORK</h3>
         {% if roles %}
@@ -26,6 +26,7 @@
             <h3 class="user-field-data">{% for genre in genres %}{{genre}} {% endfor %}</h3>
         {% endif %}
         <h3 class="user-field"><a method="POST" href="/users/{{user.id}}/view-cv">View CV</a></h3>
+        <h3 class="user-field"><a href="/users/{{user.id}}/view-rep">View {{user.first_name}}'s Repertoire</a></h3>
         {% if g.user.id == user.id %}
         <h3 class="user-field">Edit user info<a href="{{user.id}}/edit"><i class="fas fa-edit"></i></a></i></h3>
         <h3 class="user-field">Add Instrument<a href="{{user.id}}/add-instrument"><i class="fas fa-edit"></i></a></i></h3>
@@ -75,12 +76,6 @@
                     <p>{{user.bio}}</p>
                 </div>
             </div>
-            {% for id in id_list %}
-                    <ul>Title: {{works["works"][id]["title"]}}
-                        <li>Genre: {{works["genre"]}}</li>
-                        <li>ID: <a href="/works/{{works['works'][id]['id']}}">{{works["works"][id]["id"]}}</a></li>
-                    </ul>    
-            {% endfor %}
     {% if g.user.id == user.id %}       
     <form action="/users/{{user.id}}/delete" method="POST">
         <input type="submit" value="Delete User" class="btn btn-danger"/>
