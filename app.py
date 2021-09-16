@@ -332,7 +332,7 @@ def list_user_works(user_id):
     user_pieces = pieces_resp.json()
     return render_template('users/user-works.html', works=user_pieces, id_list=id_list_str,)
 
-@app.route('/users/<int:user_id>/delete', methods=["POST"])
+@app.route('/users/<int:user_id>/delete', methods=["DELETE"])
 def delete_user(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
