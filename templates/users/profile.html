@@ -4,7 +4,7 @@
 {% block content %}
 <div class="profile">
     <div class="profile-summary container col-4 float-left rounded mt-4">
-        <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail" id="profile-picture">
+        <img src="{{user.image_url}}" alt="user's picture" class="img-thumbnail mt-2 rounded mx-auto d-block" id="profile-picture">
         <h2 class="h2">{{user.full_name}}</h1>
         <h2 class="user-field">Email: {{user.email}}</h2>
         <h3 class="user-field">INSTRUMENT</h3>
@@ -33,7 +33,7 @@
         <h3 class="user-field">Add Genre<a href="{{user.id}}/add-genre"><i class="fas fa-edit"></i></a></i></h3>
         {% endif %}
     </div>
-    <div class=" container float-right col-8 mt-4">
+    <div class="profile-posts container float-right col-8 mt-4">
             <div class="row">
                 <div class="profile-summary col rounded">
                     <h1 class="h2 mt-3">Events
@@ -75,12 +75,13 @@
                     <h3 class="mt-3">About {{user.first_name}}</h3>
                     <p>{{user.bio}}</p>
                 </div>
+                {% if g.user.id == user.id %}     
+                    <form action="/users/{{user.id}}/delete" method="POST">
+                        <input type="submit" value="Delete User" class="btn btn-danger"/>
+                    </form>
+                {% endif %}
             </div>
-    {% if g.user.id == user.id %}       
-    <form action="/users/{{user.id}}/delete" method="POST">
-        <input type="submit" value="Delete User" class="btn btn-danger"/>
-    </form>
-    {% endif %}   
+       
     </div>
 </div>
 {% endblock %}

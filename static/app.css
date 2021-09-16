@@ -10,6 +10,14 @@ button{
 .profile-summary{
     background-color: white;
     width:25%;
+    float: left;
+    margin-left: 4%;
+    margin-bottom: 5%;
+}
+
+.profile-posts{
+    float: right;
+    margin-right: 4%;
 }
 
 .post-container{
@@ -28,8 +36,7 @@ button{
 }
 .profile{
     background-image: linear-gradient(to right, #6d81f2, #59ccd9);
-    border-left: #fff 5rem solid;
-    border-right: #fff 5rem solid;
+    width: 100%;
 }
 #profile-picture{
     width: 50%;
