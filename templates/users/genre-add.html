@@ -14,12 +14,12 @@
         {% endfor %}
         {{ field(placeholder=field.label.text, class="instrument-list") }}
       {% endfor %}
-      <button class="btn btn-primary btn-lg m-3">Add instruments!</button>
+      <button class="btn btn-primary btn-lg m-3">Add Genre!</button>
     </form>
   </div>
 </div>
 
-  <form action="/genres/add">
+  <form action="/genres/add" class="text-center">
     <label> Don't see your preferred genre?</label>
   <input type="submit" value="Add Genre" class="btn btn-success mt-5 ml-3"/>
 

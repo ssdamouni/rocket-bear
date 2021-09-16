@@ -283,7 +283,7 @@ def edit_user_instruments(user_id):
                     db.session.add(user_instrument)
                     db.session.commit()
                     i+=1
-                return redirect(f'/users/{user_id}/edit')
+                return redirect(f'/users/{user_id}')
             
             except IntegrityError:
                 flash("You have already added one or more of these instruments", 'danger')
@@ -311,10 +311,10 @@ def edit_user_genres(user_id):
                     user_genre = UserGenre(user_id=user_id, genre_id=form.genre_id.data[i])
                     db.session.add(user_genre)
                     db.session.commit()
-                return redirect(f'/users/{user_id}/edit')
+                return redirect(f'/users/{user_id}')
             except IntegrityError:
                 flash("You have already added one or more of these genres", 'danger')
-                return render_template('users/genre-add.html', form=form)
+                return redirect(f'/users/{user_id}')
             
         return render_template('users/genre-add.html', form=form)
         
@@ -332,7 +332,7 @@ def list_user_works(user_id):
     user_pieces = pieces_resp.json()
     return render_template('users/user-works.html', works=user_pieces, id_list=id_list_str,)
 
-@app.route('/users/<int:user_id>/delete', methods=["DELETE"])
+@app.route('/users/<int:user_id>/delete', methods=["POST"])
 def delete_user(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
