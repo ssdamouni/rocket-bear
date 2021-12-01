@@ -13,7 +13,7 @@ class Instrument(db.Model):
 
     id = db.Column(
         db.Integer,
-        primary_key=True, unique=True
+        primary_key=True, unique=True #check if this is redudent
     )
 
     instrument = db.Column(db.Text, nullable=False)

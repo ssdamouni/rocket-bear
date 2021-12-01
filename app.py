@@ -313,7 +313,7 @@ def edit_user_genres(user_id):
                     db.session.commit()
                 return redirect(f'/users/{user_id}')
             except IntegrityError:
-                flash("You have already added one or more of these genres", 'danger')
+                # flash("You have already added one or more of these genres", 'danger')
                 return redirect(f'/users/{user_id}')
             
         return render_template('users/genre-add.html', form=form)
